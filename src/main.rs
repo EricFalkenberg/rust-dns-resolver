@@ -38,7 +38,7 @@ fn build_dns_query(domain_name: &String, record_type: RecordType) -> ByteString 
     output
 }
 
-fn send_dns_query(query: ByteString) -> ByteString {
+fn send_dns_query(query: ByteString) -> DNSPacket {
     let mut buf = [0; 1024];
     let socket = UdpSocket::bind("0.0.0.0:0")
         .expect("could not bind this address");
@@ -46,7 +46,7 @@ fn send_dns_query(query: ByteString) -> ByteString {
         .expect("could not send bytes");
     let response_size = socket.recv(&mut buf).unwrap();
     let response_vector = Vec::from(&buf[0..response_size]);
-    ByteString::from(response_vector)
+    read_results(ByteString::from(response_vector))
 }
 
 fn read_results(response: ByteString) -> DNSPacket {
@@ -71,6 +71,7 @@ fn read_results(response: ByteString) -> DNSPacket {
         authorities.push(record);
         idx = new_pos;
     }
+    // TODO: currently, reading additionals is broken
     // for _ in 0..header.num_additionals {
     //     let (record, new_pos) = DNSRecord::parse_from_response(&response, idx);
     //     additionals.push(record);
@@ -91,7 +92,6 @@ fn main() {
     let domain = args.get(1).unwrap_or(&default);
     println!("Querying DNS for: {:?}", domain);
     let query = build_dns_query(domain, RecordType::A);
-    let response = send_dns_query(query);
-    let results = read_results(response);
+    let results = send_dns_query(query);
     println!("{:#?}", results);
 }
