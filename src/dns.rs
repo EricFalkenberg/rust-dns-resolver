@@ -6,14 +6,14 @@ use rand::Rng;
 use crate::header::DNSHeader;
 use crate::question::DNSQuestion;
 use crate::record::DNSRecord;
-use crate::result::DNSPacket;
+use crate::result::DNSResult;
 use crate::rfc_type::{ClassType, RecordType};
 
-pub fn resolve(domain_name: &String) -> Result<DNSPacket, Error> {
+pub fn resolve(domain_name: &String) -> Result<DNSResult, Error> {
     let nameserver_ip = String::from("198.41.0.4");
     _resolve(domain_name, &nameserver_ip)
 }
-fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSPacket, Error> {
+fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSResult, Error> {
     println!("Querying DNS for: {0} at nameserver address {1}", domain_name, nameserver_ip);
     let query = build_query(domain_name, RecordType::A);
     let response = send_query(query, nameserver_ip)?;
@@ -52,7 +52,7 @@ fn build_query(domain_name: &String, record_type: RecordType) -> ByteString {
     output.append(question.to_bytes().deref_mut());
     output
 }
-fn send_query(query: ByteString, nameserver_ip: &String) -> Result<DNSPacket, Error> {
+fn send_query(query: ByteString, nameserver_ip: &String) -> Result<DNSResult, Error> {
     let mut buf = [0; 1024];
     let socket = UdpSocket::bind("0.0.0.0:0")?;
     let mut ip = String::from(nameserver_ip);
@@ -62,7 +62,7 @@ fn send_query(query: ByteString, nameserver_ip: &String) -> Result<DNSPacket, Er
     let response_vector = Vec::from(&buf[0..response_size]);
     read_results(ByteString::from(response_vector))
 }
-fn read_results(response: ByteString) -> Result<DNSPacket, Error> {
+fn read_results(response: ByteString) -> Result<DNSResult, Error> {
     let mut questions = Vec::new();
     let mut answers = Vec::new();
     let mut authorities = Vec::new();
@@ -86,7 +86,7 @@ fn read_results(response: ByteString) -> Result<DNSPacket, Error> {
         additionals.push(record);
     }
     Ok(
-        DNSPacket {
+        DNSResult {
             header,
             questions,
             answers,
