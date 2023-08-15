@@ -1,6 +1,10 @@
+use num_derive::FromPrimitive;
+
 #[allow(dead_code)]
-#[repr(u16)]
+#[derive(Debug)]
+#[derive(FromPrimitive)]
 pub enum RecordType {
+    UNKNOWN = -1, // UNKNOWN
     A = 1, // host address
     NS = 2, // authoritative name server
     MD = 3, // mail destination (obsolete - use MX)
@@ -20,7 +24,10 @@ pub enum RecordType {
 }
 
 #[allow(dead_code)]
+#[derive(Debug)]
+#[derive(FromPrimitive)]
 pub enum ClassType {
+    UNKNOWN = -1, // UNKNOWN
     IN = 1, // internet
     CS = 2, // CSNET class (obsolete)
     CH = 3, // CHAOS class

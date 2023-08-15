@@ -1,8 +1,7 @@
-use std::io::{Error, ErrorKind};
 use crate::header::DNSHeader;
 use crate::question::DNSQuestion;
 use crate::record::DNSRecord;
-use crate::rfc_type::RecordType;
+use crate::rfc_type::{ClassType, RecordType};
 
 #[derive(Debug)]
 pub struct DNSResult {
@@ -16,13 +15,20 @@ impl DNSResult {
     pub fn further_info_required(self: &DNSResult) -> bool {
         self.answers.len() == 0 && self.authorities.len() > 0
     }
-    pub fn get_host_address(self: &DNSResult) -> Result<String, Error> {
+    pub fn print_records(self: &DNSResult) {
+        println!("\nNAME\t\t\tTTL\tCLASS\tTYPE\tDATA");
         for answer in &self.answers {
-            if answer.type_ == RecordType::A as u16 {
-                return Ok(String::from(&answer.data));
-            }
+            let class_: Option<ClassType> = num::FromPrimitive::from_u16(answer.class_);
+            let type_: Option<RecordType> = num::FromPrimitive::from_u16(answer.type_);
+            println!(
+                "{0}\t\t{1}\t{2:?}\t{3:?}\t{4}",
+                answer.name,
+                answer.ttl,
+                class_.unwrap_or(ClassType::UNKNOWN),
+                type_.unwrap_or(RecordType::UNKNOWN),
+                answer.data
+            );
         }
-        Err(Error::from(ErrorKind::NotFound))
     }
 }
 

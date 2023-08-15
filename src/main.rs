@@ -17,6 +17,6 @@ fn main() -> Result<(), Error> {
     let default = String::from("example.com");
     let domain = args.get(1).unwrap_or(&default);
     let results = dns::resolve(domain)?;
-    println!("==> {0}", results.get_host_address()?);
+    results.print_records();
     Ok(())
 }

@@ -17,5 +17,8 @@ Querying 192.12.94.30 for ns-370.awsdns-46.com
 Querying 205.251.192.47 for ns-370.awsdns-46.com
 Querying 205.251.193.114 for a.r06.twtrdns.net
 Querying 205.251.192.179 for www.twitter.com
-==> 104.244.42.65
+
+NAME			TTL	CLASS	TYPE	DATA
+www.twitter.com		600	IN	CNAME	twitter.com
+twitter.com		1800	IN	A	104.244.42.193
 ```
