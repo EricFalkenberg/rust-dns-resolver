@@ -36,7 +36,7 @@ impl DNSRecord {
                     data: util::string_to_ip_addr(data)
                 }
             )
-        } else if type_ == RecordType::NS as u16 {
+        } else if type_ == RecordType::NS as u16 || type_ == RecordType::CNAME as u16 {
             let uri = util::decode_name(cursor)?;
             Ok(
                 DNSRecord {
