@@ -22,6 +22,28 @@ use crate::result::DNSPacket;
 use crate::rfc_type::ClassType;
 use crate::rfc_type::RecordType;
 
+fn resolve(domain_name: &String) -> DNSPacket {
+    let nameserver_ip = String::from("198.41.0.4");
+    _resolve(domain_name, &nameserver_ip)
+}
+
+fn _resolve(domain_name: &String, nameserver_ip: &String) -> DNSPacket {
+    println!("Querying DNS for: {0} at nameserver address {1}", domain_name, nameserver_ip);
+    let query = build_dns_query(domain_name, RecordType::A);
+    let response = send_dns_query(query, nameserver_ip);
+    if response.answers.len() == 0 {
+        let nameserver_name = &response.authorities.get(0).unwrap().data;
+        for entry in &response.additionals {
+            if entry.type_ == RecordType::A as u16 && &entry.name == nameserver_name {
+                return _resolve(domain_name, &entry.data);
+            }
+        }
+        response
+    } else {
+        response
+    }
+}
+
 fn build_dns_query(domain_name: &String, record_type: RecordType) -> ByteString {
     let mut rng = rand::thread_rng();
     let header = DNSHeader {
@@ -39,11 +61,13 @@ fn build_dns_query(domain_name: &String, record_type: RecordType) -> ByteString 
     output
 }
 
-fn send_dns_query(query: ByteString) -> DNSPacket {
+fn send_dns_query(query: ByteString, nameserver_ip: &String) -> DNSPacket {
     let mut buf = [0; 1024];
     let socket = UdpSocket::bind("0.0.0.0:0")
         .expect("could not bind this address");
-    socket.send_to(query.as_slice(), "198.41.0.4:53")
+    let mut ip = String::from(nameserver_ip);
+    ip.push_str(":53");
+    socket.send_to(query.as_slice(), ip)
         .expect("could not send bytes");
     let response_size = socket.recv(&mut buf).unwrap();
     let response_vector = Vec::from(&buf[0..response_size]);
@@ -87,7 +111,8 @@ fn main() {
     let default = String::from("example.com");
     let domain = args.get(1).unwrap_or(&default);
     println!("Querying DNS for: {:?}", domain);
-    let query = build_dns_query(domain, RecordType::A);
-    let results = send_dns_query(query);
+    let results = resolve(domain);
+    // let query = build_dns_query(domain, RecordType::A);
+    // let results = send_dns_query(query);
     println!("{:#?}", results);
 }
