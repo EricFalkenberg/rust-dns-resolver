@@ -1,4 +1,4 @@
-# Rust DNS Resolver
+# Rust DNS Resolver [![Rust](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml/badge.svg)](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml)
 A toy DNS resolver built while following the instruction of [this guide](https://implement-dns.wizardzines.com/).
 > [!WARNING]
 > This is a toy resolver and should not be used as a real one or used as an example for your implementation
