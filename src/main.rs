@@ -9,6 +9,7 @@ mod rfc_type;
 mod result;
 
 use std::env;
+use std::io::Cursor;
 use std::net::UdpSocket;
 use std::ops::{DerefMut};
 use byte_string::{ByteString};
@@ -54,29 +55,24 @@ fn read_results(response: ByteString) -> DNSPacket {
     let mut answers = Vec::new();
     let mut authorities = Vec::new();
     let mut additionals = Vec::new();
-    let header = DNSHeader::parse_from_bytes(&response);
-    let mut idx = 12;
+    let mut cursor = Cursor::new(response);
+    let header = DNSHeader::parse_from_bytes(&mut cursor);
     for _ in 0..header.num_questions {
-        let (result, new_pos) = DNSQuestion::parse_from_bytes(&response, idx);
+        let result = DNSQuestion::parse_from_bytes(&mut cursor);
         questions.push(result);
-        idx = new_pos;
     }
     for _ in 0..header.num_answers {
-        let (record, new_pos) = DNSRecord::parse_from_response(&response, idx);
+        let record = DNSRecord::parse_from_response(&mut cursor);
         answers.push(record);
-        idx = new_pos;
     }
     for _ in 0..header.num_authorities {
-        let (record, new_pos) = DNSRecord::parse_from_response(&response, idx);
+        let record = DNSRecord::parse_from_response(&mut cursor);
         authorities.push(record);
-        idx = new_pos;
     }
-    // TODO: currently, reading additionals is broken
-    // for _ in 0..header.num_additionals {
-    //     let (record, new_pos) = DNSRecord::parse_from_response(&response, idx);
-    //     additionals.push(record);
-    //     idx = new_pos;
-    // }
+    for _ in 0..header.num_additionals {
+        let record = DNSRecord::parse_from_response(&mut cursor);
+        additionals.push(record);
+    }
     DNSPacket {
         header,
         questions,

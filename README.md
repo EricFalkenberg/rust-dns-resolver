@@ -10,11 +10,10 @@ dns-resolver <url>
 ## Output Example
 This example showcases what a query to a root name-server returns without the RECURSION_DESIRED flag turned on. The nameserver responds with a list of nameservers that posess the knowledge of where we can find www.google.com.
 ```
-Output Example:
 Querying DNS for: "www.google.com"
 DNSPacket {
     header: DNSHeader {
-        id: 27745,
+        id: 42309,
         flags: 33280,
         num_questions: 1,
         num_answers: 0,
@@ -122,6 +121,84 @@ DNSPacket {
             data: "d.gtld-servers.net",
         },
     ],
-    additionals: [],
+    additionals: [
+        DNSRecord {
+            name: "e.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.12.94.30",
+        },
+        DNSRecord {
+            name: "e.gtld-servers.net",
+            type_: 28,
+            class_: 1,
+            ttl: 172800,
+            data: " \u{1}\u{5}\u{2}\u{1c}�\0\0\0\0\0\0\0\0\00",
+        },
+        DNSRecord {
+            name: "b.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.33.14.30",
+        },
+        DNSRecord {
+            name: "b.gtld-servers.net",
+            type_: 28,
+            class_: 1,
+            ttl: 172800,
+            data: " \u{1}\u{5}\u{3}#\u{1d}\0\0\0\0\0\0\0\u{2}\00",
+        },
+        DNSRecord {
+            name: "j.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.48.79.30",
+        },
+        DNSRecord {
+            name: "j.gtld-servers.net",
+            type_: 28,
+            class_: 1,
+            ttl: 172800,
+            data: " \u{1}\u{5}\u{2}p�\0\0\0\0\0\0\0\0\00",
+        },
+        DNSRecord {
+            name: "m.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.55.83.30",
+        },
+        DNSRecord {
+            name: "m.gtld-servers.net",
+            type_: 28,
+            class_: 1,
+            ttl: 172800,
+            data: " \u{1}\u{5}\u{1}��\0\0\0\0\0\0\0\0\00",
+        },
+        DNSRecord {
+            name: "i.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.43.172.30",
+        },
+        DNSRecord {
+            name: "i.gtld-servers.net",
+            type_: 28,
+            class_: 1,
+            ttl: 172800,
+            data: " \u{1}\u{5}\u{3}9�\0\0\0\0\0\0\0\0\00",
+        },
+        DNSRecord {
+            name: "f.gtld-servers.net",
+            type_: 1,
+            class_: 1,
+            ttl: 172800,
+            data: "192.35.51.30",
+        },
+    ],
 }
 ```

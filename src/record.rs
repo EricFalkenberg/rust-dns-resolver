@@ -1,3 +1,4 @@
+use std::io::{Cursor, Read};
 use byte_string::{ByteString};
 use crate::rfc_type::RecordType;
 use crate::util;
@@ -11,39 +12,47 @@ pub struct DNSRecord {
     pub data: String
 }
 impl DNSRecord {
-    pub fn parse_from_response(bytes: &ByteString, start: usize) -> (DNSRecord, usize) {
-        let (name, idx) = util::decode_name(bytes, start);
-        let type_ = util::bytes_to_u16(bytes[idx], bytes[idx+1]);
-        let class_ = util::bytes_to_u16(bytes[idx+2], bytes[idx+3]);
-        let ttl = util::bytes_to_u32(bytes[idx+4], bytes[idx+5], bytes[idx+6], bytes[idx+7]);
-        let data_len = util::bytes_to_u16(bytes[idx+8], bytes[idx+9]) as usize;
+    pub fn parse_from_response(cursor: &mut Cursor<ByteString>) -> DNSRecord {
+        let mut u8_buf = [0u8; 2];
+        let mut u32_buf = [0u8; 4];
+        let name = util::decode_name(cursor);
+        cursor.read(&mut u8_buf).unwrap();
+        let type_ = u16::from_be_bytes(u8_buf);
+        cursor.read(&mut u8_buf).unwrap();
+        let class_ = u16::from_be_bytes(u8_buf);
+        cursor.read(&mut u32_buf).unwrap();
+        let ttl = u32::from_be_bytes(u32_buf);
+        cursor.read(&mut u8_buf).unwrap();
+        let data_len = u16::from_be_bytes(u8_buf) as usize;
         if type_ == RecordType::A as u16 {
-            let data: Vec<u8> = Vec::from(&bytes[idx+10..idx+10+data_len]);
-            (DNSRecord {
+            let mut data = vec![0u8; data_len];
+            cursor.read(&mut data).unwrap();
+            DNSRecord {
                 name,
                 type_,
                 class_,
                 ttl,
                 data: util::string_to_ip_addr(data)
-            }, idx + 9 + data_len)
+            }
         } else if type_ == RecordType::NS as u16 {
-            let (uri, idx) = util::decode_name(bytes, idx+10);
-            (DNSRecord {
+            let uri = util::decode_name(cursor);
+            DNSRecord {
                 name,
                 type_,
                 class_,
                 ttl,
                 data: uri
-            }, idx)
+            }
         } else {
-            let data: Vec<u8> = Vec::from(&bytes[idx+10..idx+10+data_len]);
-            (DNSRecord {
+            let mut data = vec![0u8; data_len];
+            cursor.read(&mut data).unwrap();
+            DNSRecord {
                 name,
                 type_,
                 class_,
                 ttl,
-                data: String::from_utf8(data).unwrap()
-            }, idx + 9 + data_len)
+                data: String::from_utf8_lossy(&data).to_string()
+            }
         }
     }
 }

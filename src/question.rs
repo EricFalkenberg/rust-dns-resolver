@@ -1,3 +1,4 @@
+use std::io::{Cursor, Read};
 use byte_string::ByteString;
 use crate::util;
 
@@ -15,15 +16,18 @@ impl DNSQuestion {
         output.extend_from_slice(&self.class_.to_be_bytes());
         ByteString::new(output)
     }
-    pub fn parse_from_bytes(bytes: &ByteString, start: usize) -> (DNSQuestion, usize) {
-        let (name, idx) = util::decode_name(bytes, start);
-        let type_ = util::bytes_to_u16(bytes[idx], bytes[idx+1]);
-        let class_ = util::bytes_to_u16(bytes[idx+2], bytes[idx+3]);
-        (DNSQuestion {
+    pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> DNSQuestion {
+        let mut buf = [0 as u8; 2];
+        let name = util::decode_name(cursor);
+        cursor.read(&mut buf).unwrap();
+        let type_ = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let class_ = u16::from_be_bytes(buf);
+        DNSQuestion {
             name,
             type_,
             class_
-        }, idx + 4)
+        }
     }
     fn encode_dns_name(self: &DNSQuestion) -> Vec<u8> {
         let mut encoded = Vec::new();

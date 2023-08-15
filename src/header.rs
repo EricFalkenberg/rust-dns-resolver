@@ -1,5 +1,5 @@
+use std::io::{Cursor, Read};
 use byte_string::{ByteString};
-use crate::util;
 
 #[derive(Debug)]
 pub struct DNSHeader {
@@ -21,14 +21,20 @@ impl DNSHeader {
         output.extend_from_slice(&self.num_additionals.to_be_bytes());
         ByteString::new(output)
     }
-    pub fn parse_from_bytes(bytes: &ByteString) -> DNSHeader {
-        let input = bytes.to_vec();
-        let id = util::bytes_to_u16(input[0], input[1]);
-        let flags = util::bytes_to_u16(input[2], input[3]);
-        let num_questions = util::bytes_to_u16(input[4], input[5]);
-        let num_answers = util::bytes_to_u16(input[6], input[7]);
-        let num_authorities = util::bytes_to_u16(input[8], input[9]);
-        let num_additionals = util::bytes_to_u16(input[10], input[11]);
+    pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> DNSHeader {
+        let mut buf= [0 as u8; 2];
+        cursor.read(&mut buf).unwrap();
+        let id = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let flags = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let num_questions = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let num_answers = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let num_authorities = u16::from_be_bytes(buf);
+        cursor.read(&mut buf).unwrap();
+        let num_additionals = u16::from_be_bytes(buf);
         DNSHeader {
             id,
             flags,
