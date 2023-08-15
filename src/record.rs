@@ -15,7 +15,7 @@ impl DNSRecord {
     pub fn parse_from_response(cursor: &mut Cursor<ByteString>) -> Result<DNSRecord, Error> {
         let mut u8_buf = [0u8; 2];
         let mut u32_buf = [0u8; 4];
-        let name = util::decode_name(cursor);
+        let name = util::decode_name(cursor)?;
         cursor.read(&mut u8_buf)?;
         let type_ = u16::from_be_bytes(u8_buf);
         cursor.read(&mut u8_buf)?;
@@ -37,7 +37,7 @@ impl DNSRecord {
                 }
             )
         } else if type_ == RecordType::NS as u16 {
-            let uri = util::decode_name(cursor);
+            let uri = util::decode_name(cursor)?;
             Ok(
                 DNSRecord {
                     name,

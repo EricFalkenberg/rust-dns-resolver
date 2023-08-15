@@ -1,8 +1,8 @@
-use std::io::{Cursor, Read, Seek, SeekFrom};
+use std::io::{Cursor, Error, Read, Seek, SeekFrom};
 use std::net::{Ipv4Addr};
 use byte_string::ByteString;
 
-fn decode_compressed_name(cursor: &mut Cursor<ByteString>) -> String {
+fn decode_compressed_name(cursor: &mut Cursor<ByteString>) -> Result<String, Error> {
     let mut buf = [0 as u8; 2];
     cursor.read(&mut buf).unwrap();
     buf[0] = buf[0] & 0b0011_1111;
@@ -13,29 +13,28 @@ fn decode_compressed_name(cursor: &mut Cursor<ByteString>) -> String {
     cursor.seek(SeekFrom::Start(current_pos)).expect("Could not find position");
     result
 }
-pub fn decode_name(cursor: &mut Cursor<ByteString>) -> String {
+pub fn decode_name(cursor: &mut Cursor<ByteString>) -> Result<String, Error> {
     let mut parts: Vec<String> = Vec::new();
     loop {
         let length = cursor.bytes()
             .next()
-            .transpose()
-            .unwrap()
+            .transpose()?
             .unwrap_or(0);
         if length == 0 {
             break
         }
         else if (length & 0b1100_0000) >= 192 {
-            cursor.seek(SeekFrom::Current(-1)).unwrap();
-            let result = decode_compressed_name(cursor);
+            cursor.seek(SeekFrom::Current(-1))?;
+            let result = decode_compressed_name(cursor)?;
             parts.push(result);
             break;
         } else {
             let mut buf = vec![0u8; length as usize];
-            cursor.read_exact(&mut buf).unwrap();
+            cursor.read_exact(&mut buf)?;
             parts.push(String::from_utf8(buf).unwrap());
         }
     }
-    parts.join(".")
+    Ok(parts.join("."))
 }
 pub fn string_to_ip_addr(bytes: Vec<u8>) -> String {
     if bytes.len() == 4 {

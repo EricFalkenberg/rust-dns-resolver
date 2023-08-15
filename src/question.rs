@@ -18,7 +18,7 @@ impl DNSQuestion {
     }
     pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> Result<DNSQuestion, Error> {
         let mut buf = [0 as u8; 2];
-        let name = util::decode_name(cursor);
+        let name = util::decode_name(cursor)?;
         cursor.read(&mut buf)?;
         let type_ = u16::from_be_bytes(buf);
         cursor.read(&mut buf)?;
