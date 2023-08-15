@@ -25,9 +25,9 @@ fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSPacket, E
                 return _resolve(domain_name, &entry.data);
             }
         }
-        let result = _resolve(nameserver_name, nameserver_ip)?;
-        if result.answers.len() > 0 {
-            let answer = result.answers.get(0).unwrap();
+        let ns_result = _resolve(nameserver_name, nameserver_ip)?;
+        if ns_result.answers.len() > 0 {
+            let answer = ns_result.answers.get(0).unwrap();
             return _resolve(domain_name, &answer.data);
         }
         Err(Error::from(ErrorKind::NotFound))
