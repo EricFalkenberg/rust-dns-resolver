@@ -61,4 +61,7 @@ impl DNSRecord {
             )
         }
     }
+    pub fn is_host_address_record_for(self: &DNSRecord, domain_name: &String) -> bool {
+        self.type_ == RecordType::A as u16 && &self.name == domain_name
+    }
 }

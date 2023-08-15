@@ -10,3 +10,8 @@ pub struct DNSPacket {
     pub authorities: Vec<DNSRecord>,
     pub additionals: Vec<DNSRecord>
 }
+impl DNSPacket {
+    pub fn further_info_required(self: &DNSPacket) -> bool {
+        self.answers.len() == 0 && self.authorities.len() > 0
+    }
+}

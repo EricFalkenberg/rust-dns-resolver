@@ -13,18 +13,19 @@ pub fn resolve(domain_name: &String) -> Result<DNSPacket, Error> {
     let nameserver_ip = String::from("198.41.0.4");
     _resolve(domain_name, &nameserver_ip)
 }
-
 fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSPacket, Error> {
     println!("Querying DNS for: {0} at nameserver address {1}", domain_name, nameserver_ip);
     let query = build_query(domain_name, RecordType::A);
     let response = send_query(query, nameserver_ip)?;
-    if response.answers.len() == 0 && response.authorities.len() > 0 {
-        let nameserver_name = &response.authorities.get(0).unwrap().data;
+    if response.further_info_required() {
+        let nameserver_name = &response.authorities[0].data;
+        // look for the ip for the next nameserver in the additionals
         for entry in &response.additionals {
-            if entry.type_ == RecordType::A as u16 && &entry.name == nameserver_name {
+            if entry.is_host_address_record_for(nameserver_name) {
                 return _resolve(domain_name, &entry.data);
             }
         }
+        // if we can't find it, we're in luck cause we're a dns resolver.
         let ns_result = _resolve(nameserver_name, nameserver_ip)?;
         if ns_result.answers.len() > 0 {
             let answer = ns_result.answers.get(0).unwrap();
