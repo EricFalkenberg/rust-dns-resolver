@@ -1,4 +1,4 @@
-use std::io::{Cursor, Read};
+use std::io::{Cursor, Error, Read};
 use byte_string::{ByteString};
 
 #[derive(Debug)]
@@ -21,28 +21,30 @@ impl DNSHeader {
         output.extend_from_slice(&self.num_additionals.to_be_bytes());
         ByteString::new(output)
     }
-    pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> DNSHeader {
+    pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> Result<DNSHeader, Error> {
         let mut buf= [0 as u8; 2];
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let id = u16::from_be_bytes(buf);
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let flags = u16::from_be_bytes(buf);
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let num_questions = u16::from_be_bytes(buf);
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let num_answers = u16::from_be_bytes(buf);
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let num_authorities = u16::from_be_bytes(buf);
-        cursor.read(&mut buf).unwrap();
+        cursor.read(&mut buf)?;
         let num_additionals = u16::from_be_bytes(buf);
-        DNSHeader {
-            id,
-            flags,
-            num_questions,
-            num_answers,
-            num_authorities,
-            num_additionals
-        }
+        Ok(
+            DNSHeader {
+                id,
+                flags,
+                num_questions,
+                num_answers,
+                num_authorities,
+                num_additionals
+            }
+        )
     }
 }
 impl Default for DNSHeader {
