@@ -1,6 +1,8 @@
+use std::io::{Error, ErrorKind};
 use crate::header::DNSHeader;
 use crate::question::DNSQuestion;
 use crate::record::DNSRecord;
+use crate::rfc_type::RecordType;
 
 #[derive(Debug)]
 pub struct DNSResult {
@@ -13,6 +15,14 @@ pub struct DNSResult {
 impl DNSResult {
     pub fn further_info_required(self: &DNSResult) -> bool {
         self.answers.len() == 0 && self.authorities.len() > 0
+    }
+    pub fn get_host_address(self: &DNSResult) -> Result<String, Error> {
+        for answer in &self.answers {
+            if answer.type_ == RecordType::A as u16 {
+                return Ok(String::from(&answer.data));
+            }
+        }
+        Err(Error::from(ErrorKind::NotFound))
     }
 }
 

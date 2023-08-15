@@ -14,7 +14,7 @@ pub fn resolve(domain_name: &String) -> Result<DNSResult, Error> {
     _resolve(domain_name, &nameserver_ip)
 }
 fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSResult, Error> {
-    println!("Querying DNS for: {0} at nameserver address {1}", domain_name, nameserver_ip);
+    println!("Querying {0} for {1}", nameserver_ip, domain_name);
     let query = build_query(domain_name, RecordType::A);
     let response = send_query(query, nameserver_ip)?;
     if response.further_info_required() {
