@@ -23,7 +23,7 @@ pub fn decode_name(cursor: &mut Cursor<ByteString>) -> Result<String, Error> {
         if length == 0 {
             break
         }
-        else if (length & 0b1100_0000) >= 192 {
+        else if (length & 0b1100_0000) == 192 {
             cursor.seek(SeekFrom::Current(-1))?;
             let result = decode_compressed_name(cursor)?;
             parts.push(result);
