@@ -62,5 +62,6 @@ mod tests {
             authorities: vec![],
             additionals: vec![],
         };
+        assert_eq!(result.further_info_required(), false);
     }
 }
