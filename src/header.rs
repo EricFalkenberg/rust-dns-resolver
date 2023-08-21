@@ -22,18 +22,18 @@ impl DNSHeader {
         ByteString::new(output)
     }
     pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> Result<DNSHeader, Error> {
-        let mut buf= [0 as u8; 2];
-        cursor.read(&mut buf)?;
+        let mut buf= [0u8; 2];
+        cursor.read_exact(&mut buf)?;
         let id = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let flags = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let num_questions = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let num_answers = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let num_authorities = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let num_additionals = u16::from_be_bytes(buf);
         Ok(
             DNSHeader {

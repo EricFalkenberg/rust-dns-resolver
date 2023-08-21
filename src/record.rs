@@ -16,17 +16,17 @@ impl DNSRecord {
         let mut u8_buf = [0u8; 2];
         let mut u32_buf = [0u8; 4];
         let name = util::decode_name(cursor)?;
-        cursor.read(&mut u8_buf)?;
+        cursor.read_exact(&mut u8_buf)?;
         let type_ = u16::from_be_bytes(u8_buf);
-        cursor.read(&mut u8_buf)?;
+        cursor.read_exact(&mut u8_buf)?;
         let class_ = u16::from_be_bytes(u8_buf);
-        cursor.read(&mut u32_buf)?;
+        cursor.read_exact(&mut u32_buf)?;
         let ttl = u32::from_be_bytes(u32_buf);
-        cursor.read(&mut u8_buf)?;
+        cursor.read_exact(&mut u8_buf)?;
         let data_len = u16::from_be_bytes(u8_buf) as usize;
         if type_ == RecordType::A as u16 {
             let mut data = vec![0u8; data_len];
-            cursor.read(&mut data)?;
+            cursor.read_exact(&mut data)?;
             Ok(
                 DNSRecord {
                     name,
@@ -49,7 +49,7 @@ impl DNSRecord {
             )
         } else {
             let mut data = vec![0u8; data_len];
-            cursor.read(&mut data)?;
+            cursor.read_exact(&mut data)?;
             Ok(
                 DNSRecord {
                     name,

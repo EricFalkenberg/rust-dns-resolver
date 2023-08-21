@@ -27,7 +27,7 @@ fn _resolve(domain_name: &String, nameserver_ip: &String) -> Result<DNSResult, E
         }
         // if we can't find it, we're in luck cause we're a dns resolver.
         let ns_result = _resolve(nameserver_name, nameserver_ip)?;
-        if ns_result.answers.len() > 0 {
+        if !ns_result.answers.is_empty() {
             let answer = ns_result.answers.get(0).unwrap();
             return _resolve(domain_name, &answer.data);
         }

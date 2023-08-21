@@ -13,7 +13,7 @@ pub struct DNSResult {
 }
 impl DNSResult {
     pub fn further_info_required(self: &DNSResult) -> bool {
-        self.answers.len() == 0 && self.authorities.len() > 0
+        self.answers.is_empty() && !self.authorities.is_empty()
     }
     pub fn print_records(self: &DNSResult) {
         println!("\nNAME\t\t\tTTL\tCLASS\tTYPE\tDATA");

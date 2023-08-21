@@ -5,6 +5,7 @@ mod header;
 mod question;
 mod record;
 mod util;
+#[allow(clippy::upper_case_acronyms)]
 mod rfc_type;
 mod result;
 mod dns;

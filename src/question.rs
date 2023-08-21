@@ -17,11 +17,11 @@ impl DNSQuestion {
         ByteString::new(output)
     }
     pub fn parse_from_bytes(cursor: &mut Cursor<ByteString>) -> Result<DNSQuestion, Error> {
-        let mut buf = [0 as u8; 2];
+        let mut buf = [0u8; 2];
         let name = util::decode_name(cursor)?;
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let type_ = u16::from_be_bytes(buf);
-        cursor.read(&mut buf)?;
+        cursor.read_exact(&mut buf)?;
         let class_ = u16::from_be_bytes(buf);
         Ok(
             DNSQuestion {

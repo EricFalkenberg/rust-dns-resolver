@@ -3,9 +3,9 @@ use std::net::{Ipv4Addr};
 use byte_string::ByteString;
 
 fn decode_compressed_name(cursor: &mut Cursor<ByteString>) -> Result<String, Error> {
-    let mut buf = [0 as u8; 2];
-    cursor.read(&mut buf)?;
-    buf[0] = buf[0] & 0b0011_1111;
+    let mut buf = [0u8; 2];
+    cursor.read_exact(&mut buf)?;
+    buf[0] &= 0b0011_1111;
     let decoded_pointer = u16::from_be_bytes(buf);
     let current_pos = cursor.position();
     cursor.seek(SeekFrom::Start(decoded_pointer as u64))?;
