@@ -1,4 +1,4 @@
-# Rust DNS Resolver [![Rust](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml/badge.svg)](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml)
+# Rust DNS Resolver [![Rust](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml/badge.svg)](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust.yml) [![Code Analysis](https://github.com/EricFalkenberg/rust-dns-resolver/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/EricFalkenberg/rust-dns-resolver/security/code-scanning?query=is%3Aopen+branch%3Amaster+tool%3Aclippy++)
 A toy DNS resolver built while following the instruction of [this guide](https://implement-dns.wizardzines.com/).
 > [!WARNING]
 > This is a toy resolver and should not be used in any official capacity. 
