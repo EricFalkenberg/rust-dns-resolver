@@ -38,7 +38,7 @@ pub fn decode_name(cursor: &mut Cursor<ByteString>) -> Result<String, Error> {
 }
 pub fn string_to_ip_addr(bytes: Vec<u8>) -> String {
     if bytes.len() == 4 {
-        let a = bytes.get(0).unwrap().to_owned();
+        let a = bytes.first().unwrap().to_owned();
         let b = bytes.get(1).unwrap().to_owned();
         let c = bytes.get(2).unwrap().to_owned();
         let d = bytes.get(3).unwrap().to_owned();
